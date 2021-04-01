@@ -56,9 +56,14 @@ def home():
 
 @app.route("/edit", methods=["GET", "POST"])
 def edit():
+    """
+    This function edits the movie
+    :return:
+    """
     form = RateMovieForm()
     movie_id = request.args.get("id")
     movie_to_update = Movie.query.get(movie_id)
+
     if form.validate_on_submit():
         movie_to_update.rating = float(form.rating.data)
         movie_to_update.review = form.review.data
@@ -69,6 +74,10 @@ def edit():
 
 @app.route("/delete")
 def delete():
+    """
+    This function deletes the movie
+    :return:
+    """
     movie_id = request.args.get("id")
     movie_to_delete = Movie.query.get(movie_id)
     db.session.delete(movie_to_delete)
