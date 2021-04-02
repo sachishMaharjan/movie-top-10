@@ -8,7 +8,7 @@ from sqlalchemy import desc
 import requests
 
 
-MOVIE_API_KEY = "163f3270f7796363251e5657e23f331a"
+MOVIE_API_KEY = YOUR_API_KEY HERE
 MOVIE_API_SEARCH = "https://api.themoviedb.org/3/search/movie"
 MOVIE_API_SELECT = "https://api.themoviedb.org/3/movie"
 MOVIE_DB_IMAGE_URL = "https://image.tmdb.org/t/p/w500/"
