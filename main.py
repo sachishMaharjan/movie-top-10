@@ -4,11 +4,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
-from sqlalchemy import desc
 import requests
 
 
-MOVIE_API_KEY = YOUR_API_KEY HERE
+MOVIE_API_KEY = YOUR_API_KEY_HERE
 MOVIE_API_SEARCH = "https://api.themoviedb.org/3/search/movie"
 MOVIE_API_SELECT = "https://api.themoviedb.org/3/movie"
 MOVIE_DB_IMAGE_URL = "https://image.tmdb.org/t/p/w500/"
@@ -75,9 +74,6 @@ def home():
         # This line gives each movie a new ranking reversed from their order in all_movies
         all_movies[i].ranking = len(all_movies) - i
     db.session.commit()
-
-    for movie in all_movies:
-        print(movie.ranking)
     return render_template("index.html", movies=all_movies)
 
 
@@ -92,10 +88,6 @@ def edit():
     movie_to_update = Movie.query.get(movie_id)
 
     if form.validate_on_submit():
-        # movie_id = request.args.get("id")
-        # print(movie_id)
-        # movie_to_update = Movie.query.get(movie_id)
-        # # print(movie_to_update)
         movie_to_update.rating = float(form.rating.data)
         movie_to_update.review = form.review.data
         db.session.commit()
@@ -121,14 +113,12 @@ def add_movie():
     form = AddMovieForm()
     if form.validate_on_submit():
         title = form.title.data
-        # print(title)
         params = {
             "query": title,
             "api_key": MOVIE_API_KEY
         }
         response = requests.get(MOVIE_API_SEARCH, params=params)
         movies_data = response.json()['results']
-        # print(movies_data)
 
         for movie in movies_data:
             new_movie = {
@@ -137,7 +127,6 @@ def add_movie():
                 "release_date": movie['release_date'],
             }
             all_movies_list.append(new_movie)
-        # print(all_movies)
         return render_template("select.html", movies=all_movies_list)
     return render_template("add.html", form=form)
 
@@ -146,14 +135,11 @@ def add_movie():
 def select_movie():
     selected_movie_id = request.args.get("id")
     if selected_movie_id:
-        # movie_to_add = Movie.query.get(selected_movie_id)
-        # print(movie_to_add)
         params = {
             "api_key": MOVIE_API_KEY,
         }
         response = requests.get(f"{MOVIE_API_SELECT}/{selected_movie_id}", params=params)
         selected_movie = response.json()
-        # print(selected_movie)
         new_movie = Movie(
             title=selected_movie['original_title'],
             year=selected_movie['release_date'].split("-")[0],
@@ -163,9 +149,7 @@ def select_movie():
         )
         db.session.add(new_movie)
         db.session.commit()
-
         movie_to_add = Movie.query.filter_by(title=selected_movie['original_title']).first()
-        print(movie_to_add.id)
 
         return redirect(url_for('edit', id=movie_to_add.id))
 
